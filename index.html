@@ -266,7 +266,7 @@ dialog::backdrop{background:rgba(34,40,43,.35);backdrop-filter:blur(3px)}
           <div class="field"><label for="phone">Телефон</label><input id="phone" name="phone" type="tel" autocomplete="tel" inputmode="tel" placeholder="+7 900 000-00-00" required><span class="err" id="e-phone"></span></div>
           <div class="field"><label for="email">Почта</label><input id="email" name="email" type="email" autocomplete="email" placeholder="name@mail.ru" required><span class="err" id="e-email"></span></div>
         </div>
-        <div class="field"><label for="ig">Ник в Instagram <span class="muted" style="font-weight:400">(необязательно)</span></label><input id="ig" name="ig" placeholder="@nutri_maria"></div>
+        <div class="field"><label for="telegram">Ник в Telegram <span class="muted" style="font-weight:400">(необязательно)</span></label><input id="telegram" name="telegram" placeholder="@username" autocapitalize="none" spellcheck="false" aria-describedby="telegramHint e-telegram"><span class="muted" id="telegramHint">Укажи имя пользователя из настроек Telegram, например @username. Можно без @.</span><span class="err" id="e-telegram"></span></div>
         <label class="check"><input type="checkbox" id="c1" required><span>Даю <button type="button" class="linkbtn" data-doc="consent">согласие на обработку персональных данных</button> и ознакомлена с <button type="button" class="linkbtn" data-doc="privacy">политикой конфиденциальности</button></span></label>
         <label class="check"><input type="checkbox" id="c2" required><span>Принимаю условия <button type="button" class="linkbtn" data-doc="offer">договора-оферты</button></span></label>
         <span class="err" id="e-check"></span>
@@ -275,12 +275,12 @@ dialog::backdrop{background:rgba(34,40,43,.35);backdrop-filter:blur(3px)}
     </div>
     <div class="ring" id="doneBox" hidden>
       <div class="done">
-        <span class="label">Заявка принята</span>
+        <span class="label">Заявка подготовлена</span>
         <p class="big">Место <span class="silver" id="myNum">№1</span> — твоё</p>
         <p class="muted">Чтобы место осталось за тобой, сделай ещё два шага.</p>
         <div class="next">
-          <div class="next-item"><span class="sn">1</span><div><h3>Внеси предоплату 1 500 ₽</h3><p class="muted" id="payText">Ссылку на оплату пришлю в директ после заявки.</p><div class="row" style="margin-top:10px" id="payRow"></div></div></div>
-          <div class="next-item"><span class="sn">2</span><div><h3>Напиши мне в директ</h3><p class="muted">Скопируй заявку и отправь её в Instagram. Так я быстрее тебя найду.</p><div class="row" style="margin-top:10px"><button class="btn ghost" type="button" id="copyApp">Скопировать заявку</button><a class="btn" id="dmLink" href="https://ig.me/m/diana_pro_ai" target="_blank" rel="noopener">Открыть директ</a></div><p class="toast" id="copyToast"></p></div></div>
+          <div class="next-item"><span class="sn">1</span><div><h3>Внеси предоплату 1 500 ₽</h3><p class="muted" id="payText">Ссылку на оплату пришлю в Telegram после заявки.</p><div class="row" style="margin-top:10px" id="payRow"></div></div></div>
+          <div class="next-item"><span class="sn">2</span><div><h3>Напиши мне в Telegram</h3><p class="muted">Скопируй заявку и отправь её мне в Telegram @Diana_Pr0. Без этого шага я не получу заявку.</p><div class="row" style="margin-top:10px"><button class="btn ghost" type="button" id="copyApp">Скопировать заявку</button><a class="btn" id="dmLink" href="https://t.me/Diana_Pr0" target="_blank" rel="noopener">Открыть Telegram</a></div><p class="toast" id="copyToast"></p></div></div>
         </div>
       </div>
     </div>
@@ -294,7 +294,8 @@ dialog::backdrop{background:rgba(34,40,43,.35);backdrop-filter:blur(3px)}
       <button type="button" class="linkbtn" data-doc="offer">Договор-оферта</button>
       <button type="button" class="linkbtn" data-doc="consent">Согласие на обработку персональных данных</button>
       <button type="button" class="linkbtn" data-doc="privacy">Политика конфиденциальности</button>
-      <a href="https://instagram.com/diana_pro_ai" target="_blank" rel="noopener">Вернуться в Instagram</a>
+      <a href="https://instagram.com/diana_pro_ai" target="_blank" rel="noopener">Instagram @diana_pro_ai</a>
+      <a href="https://t.me/Diana_Pr0" target="_blank" rel="noopener">Telegram @Diana_Pr0</a>
     </div>
     <p id="seller"></p>
   </div>
@@ -312,6 +313,7 @@ const CONFIG={
   payUrl:'',                 // ссылка на оплату предоплаты 1 500 ₽
   endpoint:'',               // адрес для отправки заявок (Google Apps Script / сервис форм)
   instagram:'diana_pro_ai',
+  telegram:'Diana_Pr0',
   seller:{name:'[ФИО полностью / ИП]',status:'[самозанятая / ИП]',inn:'[ИНН]',email:'[почта для связи]'}
 };
 /* ====================================== */
@@ -355,7 +357,7 @@ function drawSeats(){const box=$('seats');box.innerHTML='';const taken=Math.min(
     s.setAttribute('aria-label',`Место ${i}${s.classList.contains('taken')?', занято':s.classList.contains('mine')?', твоё':', свободно'}`);box.appendChild(s)}
   const free=CONFIG.seatsTotal-taken-(mine&&mine>taken?1:0);
   $('boardNote').innerHTML=mine?`<b>Место №${mine} закреплено за тобой.</b> Осталось внести предоплату.`:
-    next?`Свободно <b>${CONFIG.seatsTotal-taken} из ${CONFIG.seatsTotal}</b>. Заполни заявку, и место <b>№${next}</b> станет твоим.`:'Все места заняты. Напиши мне в директ, чтобы попасть в лист ожидания.'}
+    next?`Свободно <b>${CONFIG.seatsTotal-taken} из ${CONFIG.seatsTotal}</b>. Заполни заявку, и место <b>№${next}</b> станет твоим.`:'Все места заняты. Напиши мне в Telegram, чтобы попасть в лист ожидания.'}
 drawSeats();
 
 // docs
@@ -363,14 +365,14 @@ const SN=()=>`${CONFIG.seller.name} (${CONFIG.seller.status}, ИНН ${CONFIG.se
 const DOCS={
  consent:()=>`<h3>Согласие на обработку персональных данных</h3><p class="draft">Черновик. Перед запуском проверьте текст с юристом.</p>
   <p>Отправляя заявку, я в соответствии с Федеральным законом от 27.07.2006 № 152-ФЗ «О персональных данных» даю согласие ${SN()} (далее — Оператор) на обработку моих персональных данных.</p>
-  <ol><li><b>Данные:</b> фамилия, имя, отчество; номер телефона; адрес электронной почты; ник в Instagram.</li>
+  <ol><li><b>Данные:</b> фамилия, имя, отчество; номер телефона; адрес электронной почты; ник в Telegram.</li>
   <li><b>Цели:</b> бронирование места на курсе, связь со мной по вопросам участия, заключение и исполнение договора.</li>
   <li><b>Действия:</b> сбор, запись, систематизация, хранение, уточнение, использование, удаление, уничтожение. Без передачи третьим лицам, кроме случаев, предусмотренных законом.</li>
   <li><b>Срок:</b> до достижения целей обработки или до отзыва согласия.</li>
   <li><b>Отзыв:</b> согласие можно отозвать, направив письмо на ${CONFIG.seller.email}.</li></ol>`,
  privacy:()=>`<h3>Политика конфиденциальности</h3><p class="draft">Черновик. Перед запуском проверьте текст с юристом.</p>
   <p>Оператор: ${SN()}. Контакт: ${CONFIG.seller.email}.</p>
-  <ol><li>Собираем только данные, которые вы указываете в форме заявки: ФИО, телефон, почту и ник в Instagram.</li>
+  <ol><li>Собираем только данные, которые вы указываете в форме заявки: ФИО, телефон, почту и ник в Telegram.</li>
   <li>Используем их, чтобы закрепить за вами место, связаться по вопросам участия и выполнить договор.</li>
   <li>Не продаём и не передаём данные третьим лицам, кроме случаев, предусмотренных законом.</li>
   <li>Храним данные до окончания курса и расчётов по нему или до вашего запроса на удаление.</li>
@@ -393,26 +395,29 @@ $('phone').addEventListener('input',e=>{let d=e.target.value.replace(/\D/g,'');i
   let o='+7';if(d.length>1)o+=' '+d.slice(1,4);if(d.length>4)o+=' '+d.slice(4,7);if(d.length>7)o+='-'+d.slice(7,9);if(d.length>9)o+='-'+d.slice(9,11);e.target.value=d?o:''});
 
 function setErr(id,msg){$('e-'+id).textContent=msg;const inp=$(id);if(inp)inp.setAttribute('aria-invalid',msg?'true':'false')}
-function appText(){return `Заявка на курс «Нейросети в работе нутрициолога»\nМесто: №${mine}\nФИО: ${$('fio').value.trim()}\nТелефон: ${$('phone').value}\nПочта: ${$('email').value.trim()}${$('ig').value.trim()?'\nInstagram: '+$('ig').value.trim():''}`}
+function appText(){return `Заявка на курс «Нейросети в работе нутрициолога»\nМесто: №${mine}\nФИО: ${$('fio').value.trim()}\nТелефон: ${$('phone').value}\nПочта: ${$('email').value.trim()}${$('telegram').value.trim()?'\nTelegram: '+$('telegram').value.trim():''}`}
 
 $('form').addEventListener('submit',async e=>{e.preventDefault();let ok=true;
   const fio=$('fio').value.trim();if(fio.split(/\s+/).length<2){setErr('fio','Укажи фамилию, имя и отчество');ok=false}else setErr('fio','');
   if($('phone').value.replace(/\D/g,'').length!==11){setErr('phone','Номер в формате +7 900 000-00-00');ok=false}else setErr('phone','');
   if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test($('email').value.trim())){setErr('email','Проверь адрес почты');ok=false}else setErr('email','');
+  const telegram=$('telegram').value.trim().replace(/^@/,'');
+  if(telegram&&!/^[A-Za-z][A-Za-z0-9_]{3,30}[A-Za-z0-9]$/.test(telegram)){setErr('telegram','Укажи ник Telegram: 5–32 латинских символа, первая — буква, последняя — буква или цифра; внутри можно _');ok=false}else setErr('telegram','');
   if(!$('c1').checked||!$('c2').checked){$('e-check').textContent='Чтобы отправить заявку, отметь оба согласия';ok=false}else $('e-check').textContent='';
   if(!ok)return;
-  const taken=Math.min(CONFIG.seatsTaken,CONFIG.seatsTotal);if(taken>=CONFIG.seatsTotal&&!mine){$('e-check').textContent='Все места заняты. Напиши мне в директ, чтобы попасть в лист ожидания.';return}
+  $('telegram').value=telegram?'@'+telegram:'';
+  const taken=Math.min(CONFIG.seatsTaken,CONFIG.seatsTotal);if(taken>=CONFIG.seatsTotal&&!mine){$('e-check').textContent='Все места заняты. Напиши мне в Telegram, чтобы попасть в лист ожидания.';return}
   mine=mine||taken+1;store.set('kurs_seat',mine);
-  if(CONFIG.endpoint){try{await fetch(CONFIG.endpoint,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({seat:mine,fio,phone:$('phone').value,email:$('email').value.trim(),instagram:$('ig').value.trim(),consent:true,offer:true,date:new Date().toISOString()})})}catch(err){}}
+  if(CONFIG.endpoint){try{await fetch(CONFIG.endpoint,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({seat:mine,fio,phone:$('phone').value,email:$('email').value.trim(),telegram:$('telegram').value.trim(),consent:true,offer:true,date:new Date().toISOString()})})}catch(err){}}
   showDone()});
 function showDone(){$('formBox').hidden=true;$('doneBox').hidden=false;$('myNum').textContent='№'+mine;
   $('payRow').innerHTML=CONFIG.payUrl?`<a class="btn" href="${CONFIG.payUrl}" target="_blank" rel="noopener">Оплатить 1 500 ₽</a>`:'';
   if(CONFIG.payUrl)$('payText').textContent='Оплата проходит на защищённой странице платёжного сервиса.';
   drawSeats();$('seat').scrollIntoView({behavior:'smooth',block:'start'})}
 $('copyApp').addEventListener('click',async()=>{const t=$('fio').value?appText():`Заявка на курс, место №${mine}`;
-  try{await navigator.clipboard.writeText(t);$('copyToast').textContent='Скопировано. Вставь в сообщение в директ'}
-  catch(e){const ta=document.createElement('textarea');ta.value=t;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();let ok=false;try{ok=document.execCommand('copy')}catch(_){}ta.remove();$('copyToast').textContent=ok?'Скопировано. Вставь в сообщение в директ':'Не получилось скопировать, напиши мне в директ своё ФИО'}});
-$('dmLink').href='https://ig.me/m/'+CONFIG.instagram;
+  try{await navigator.clipboard.writeText(t);$('copyToast').textContent='Скопировано. Вставь в сообщение в Telegram'}
+  catch(e){const ta=document.createElement('textarea');ta.value=t;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();let ok=false;try{ok=document.execCommand('copy')}catch(_){}ta.remove();$('copyToast').textContent=ok?'Скопировано. Вставь в сообщение в Telegram':'Не получилось скопировать, напиши мне в Telegram своё ФИО'}});
+$('dmLink').href='https://t.me/'+CONFIG.telegram;
 
 // silver threads
 (()=>{const c=$('threads'),x=c.getContext('2d');let w,h,dpr;
@@ -435,3 +440,4 @@ if(mine){/* returning visitor */}
 
 </body>
 </html>
+
